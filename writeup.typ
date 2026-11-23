@@ -117,3 +117,21 @@
   #response[
     Languages includes Chinese, English, Russian. Domain includes hiring, living tips, ads, notice and some sensitive topics. Nearly 50 pages util one high-quality page.
   ]
+
+== HTML to text conversion
+
++ Write a function that extracts text from a byte string containing raw HTML. Use `resiliparse.extract.html2text.extract_plain_text` to perform the extraction. This function needs a string, so you will need to first decode the byte string into a Unicode string. Be aware that the input byte string might not be encoded in UTF-8, so your function should be able to detect the encoding in case UTF-8 fails. Resiliparse also offers `resiliparse.parse.encoding.detect_encoding()`, which might be useful.
+
+  *Deliverable*: A function that takes a byte string containing HTML and returns a string containing the extracted text. Implement the adapter `[run_extract_text_from_html_bytes]` and make sure it passes `uv run pytest -k test_extract_text_from_html_bytes`.
+
+  #response[
+    Success. See `extract_text_from_html_bytes` function in `./cs336_data/utils.py` file.
+  ]
+
++ Run your text extraction function on a single WARC file. Compare its output to the extracted text in the corresponding WET file. What differences and/or similarities do you notice? Which extraction seems better?
+
+  *Deliverable*: 2-3 sentence response comparing and contrasting the text extracted by your own function versus the extracted text in the WET files.
+
+  #response[
+    The content from WET files is cleaner than my content. Some markdown syntax and empty lines are filtered out. Run `uv run cs336_data/utils.py` to get the output.
+  ]

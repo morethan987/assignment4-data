@@ -64,3 +64,9 @@ extend-select = ["UP"]
 ignore = [
     "F722"
 ]
+
+[tool.ty.environment]
+extra-paths = ["./typings"]
+
+[tool.ty.src]
+exclude = ["typings/"]
