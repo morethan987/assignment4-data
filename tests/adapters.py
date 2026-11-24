@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from cs336_data import extract_text_from_html_bytes
+from cs336_data import detect_lang, extract_text_from_html_bytes
 
 
 def run_extract_text_from_html_bytes(html_bytes: bytes) -> str | None:
@@ -11,7 +11,8 @@ def run_extract_text_from_html_bytes(html_bytes: bytes) -> str | None:
 
 
 def run_identify_language(text: str) -> tuple[Any, float]:
-    raise NotImplementedError
+    model_path = "local-shared-data/classifiers/lid.176.bin"
+    return detect_lang(model_path, text)
 
 
 def run_mask_emails(text: str) -> tuple[str, int]:

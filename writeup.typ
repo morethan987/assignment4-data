@@ -135,3 +135,29 @@
   #response[
     The content from WET files is cleaner than my content. Some markdown syntax and empty lines are filtered out. Run `uv run cs336_data/utils.py` to get the output.
   ]
+
+== Language identification
+
++ Write a function that will take a Unicode string and identify the main language that is present in this string. Your function should return a pair, containing an identifier of the language and a score between 0 and 1 representing its confidence in that prediction.
+
+  *Deliverable:* A function that performs language identification, giving its top language prediction and a score. Implement the adapter `[run_identify_language]` and make sure it passes both tests in `uv run pytest -k test_identify_language`. Note that these tests assume a particular string identifier for English ("en") and Chinese ("zh"), so your test adapter should perform any applicable re-mapping, if necessary.
+
+  #response[Sucess. See `detect_lang` function in `./cs336_data/utils.py` file.]
+
++ The behavior of language models at inference time largely depends on the data they were trained on. As a result, issues in the data filtering pipeline can result in problems downstream. What issues do you think could arise from problems in the language identification procedure? In a higher-stakes scenario (such as when deploying a user-facing product), how would you go about mitigating these issues?
+
+  *Deliverable:* A 2-5 sentence response.
+
+  #response[
+    Some text could be a mixture of different languages which may affect the model to generate the similar mixed text making the user confused. To mitigate this from a perspective of deploying, we can prompt the model to speak the same language with user's in system prompt or re-generate the answer if the languages is mismatched.
+  ]
+
++ Run your language identification system on text extracted from the WARC files (via your previously-implemented text extraction function). Manually identify the language in 20 random examples and compare your labels with the classifier predictions. Report any classifier errors. What fraction of documents are English? Based on your observations, what would be a suitable classifier confidence threshold to use in filtering?
+
+  *Deliverable:* A 2-5 sentence response.
+
+  #response[
+    Across 1,944 valid HTML documents randomly sampled from the 19,869 HTML records in the WARC file, 41.82% (813/1,944) are predicted to be English. Manually inspecting 20 random examples showed that all 20 classifier predictions (covering en, nl, de, fr, it, es, ru, te, hu, ja, and zh) matched the actual language of the extracted text, with no outright classification errors observed (note that example \#8 comes from a `.no` domain whose extracted text is in German). However, pages dominated by navigation menus, lists, phone numbers, or spam received noticeably lower confidence scores (e.g., Spanish \#5 at 0.3962, English business listing \#12 at 0.5736, and Chinese spam \#18 at 0.5775), whereas clean English prose pages scored between 0.78 and 0.94. Based on these observations, a confidence threshold around 0.6–0.7 (e.g., 0.65) is suitable for filtering, as it filters out noisy low-confidence boilerplate while retaining genuine English articles, avoiding the steep recall drop seen at $>= 0.8$ (17.85%) or $>= 0.9$ (7.05%).
+
+    Run `uv run cs336_data/utils.py` to get the result.
+  ]

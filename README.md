@@ -33,7 +33,7 @@ Visually, it should look something like:
 
 As in previous assignments, we use `uv` to manage dependencies.
 
-To generate typings file for resiliparse for LSP.
+To generate typings file for `resiliparse` for LSP.
 
 ```bash
 uv run --with mypy stubgen -p resiliparse -o typings --include-docstrings
