@@ -161,3 +161,39 @@
 
     Run `uv run cs336_data/utils.py` to get the result.
   ]
+
+== Personally identifiable information
+
++ Write a function to mask out emails. Your function will take a string as input, and replace all instances of email addresses with the string `|||EMAIL_ADDRESS|||`. To detect email addresses, you can look up regular expressions that do this reliably.
+
+  *Deliverable*: A function that replaces all email addresses in a given string with the string `|||EMAIL_ADDRESS|||`, returning a pair containing both the new string and the number of instances that were masked. Implement the adapter `run_mask_emails` and make sure it passes all tests in `uv run pytest -k test_mask_emails`.
+
+  #response[Success. See `_EMAIL_RE` in `cs336_data/mask_pii.py` file.]
+
++ Write a function to mask out phone numbers. Your function will take a string as input, and replace all instances of phone numbers with the string `|||PHONE_NUMBER|||`. Doing this reliably can be extremely challenging, as phone numbers might be written in an extremely diverse set of formats, but you should try to capture at least the most common phone number formats used in the United States, and be robust to minor syntactic deviations.
+
+  *Deliverable*: A function that replaces phone numbers in a given string with the string `|||PHONE_NUMBER|||`, returning a pair containing both the new string and the number of instances that were masked. Implement the adapter `run_mask_phone_numbers` and make sure it passes `uv run pytest -k test_mask_phones`.
+
+  #response[Success. See `_PHONE_RE` in `cs336_data/mask_pii.py` file.]
+
++ Write a function to mask out IP addresses. For this problem, it is enough to focus on IPv4 addresses (4 numbers up to 255 separated by points). Your function will take a string as input, and replace all instances of IP addresses with the string `|||IP_ADDRESS|||`.
+
+  *Deliverable*: A function that replaces IPv4 addresses in a given string with the string `|||IP_ADDRESS|||`, returning a pair containing both the new string and the number of instances that were masked. Implement the adapter `run_mask_ips` and make sure it passes `uv run pytest -k test_mask_ips`.
+
+  #response[Success. See `_IP_RE` in `cs336_data/mask_pii.py` file.]
+
++ What problems do you think might arise downstream in a language model when these filters are naively applied on the training set? How might you mitigate these issues?
+
+  *Deliverable*: A 2-5 sentence response.
+
+  #response[
+    Naively replacing PII with fixed placeholder tokens may cause the model to frequently generate these tokens, since they become common patterns in the training data. It also removes potentially useful contextual information and may introduce artifacts into the training distribution. To mitigate these issues, we can use dedicated special tokens for different PII types, filter or down-weight heavily masked samples, and preserve the surrounding context whenever possible.
+  ]
+
++ Run your PII masking functions on text extracted from the WARC files (via your previously-implemented text extraction function). Look through 20 random examples where a replacement was made; give some examples of false positives and false negatives.
+
+  *Deliverable*: A 2-5 sentence response.
+
+  #response[
+    I observed several false negatives, particularly for international phone numbers that do not follow common US formatting conventions. For example, a Chinese webpage contained phone numbers such as `057163263666` and `0571-63280333`, which were not detected by our regex. Minor formatting variations, such as full-width parentheses and additional whitespace, can also cause missed matches. No obvious false positives were found in the inspected examples, although numeric identifiers could potentially be incorrectly classified as phone numbers.
+  ]
