@@ -197,3 +197,35 @@
   #response[
     I observed several false negatives, particularly for international phone numbers that do not follow common US formatting conventions. For example, a Chinese webpage contained phone numbers such as `057163263666` and `0571-63280333`, which were not detected by our regex. Minor formatting variations, such as full-width parentheses and additional whitespace, can also cause missed matches. No obvious false positives were found in the inspected examples, although numeric identifiers could potentially be incorrectly classified as phone numbers.
   ]
+
+== Harmful content
+
++ Write a function to detect NSFW content.
+
+  *Deliverable:* A function that labels a given string as containing NSFW content or not, returning a pair containing both the label and a confidence score. Implement the adapter `[run_classify_nsfw]` and make sure it passes `uv run pytest -k test_classify_nsfw`. Note that this test is just a sanity check, taken from the Jigsaw dataset, but by no means asserts that your classifier is accurate, which you should validate.
+
+  #response[Success. See `classify_nsfw` function in `cs336_data/harmful_content.py` file.]
+
++ Write a function to detect toxic speech.
+
+  *Deliverable:* A function that labels a given string as consisting of toxic speech or not, returning a pair containing both the label and a confidence score. Implement the adapter `[run_classify_toxic_speech]` and make sure it passes `uv run pytest -k test_classify_toxic_speech`. Again, this test is just a sanity check, also taken from Jigsaw.
+
+  #response[Success. See `classify_toxic_speech` function in `cs336_data/harmful_content.py` file.]
+
++ What problems do you think might arise downstream in a language model when these filters applied to create the training set? How might you mitigate these issues?
+
+  *Deliverable:* A 2-5 sentence response.
+
+  #response[
+    Applying Jigsaw-trained NSFW and toxic speech filters can introduce dataset bias and degrade downstream language model coverage, as lexical/n-gram classifiers frequently false-positive on marginalized dialects (such as African American English), LGBTQ+ topics, medical or educational material, and sensitive historical or news discussions. Overly aggressive filtering can also reduce the model's ability to recognize or moderate harmful language in downstream safety tasks because it rarely sees those phenomena during pretraining. To mitigate these issues, we can use conservative high-confidence thresholds rather than blind binary filtering, filter by language before applying English-trained classifiers, and audit borderline predictions or downsample sensitive-but-benign domains instead of discarding them outright.
+  ]
+
++ Run your harmful content filters on text extracted from the WARC files (via your previously-implemented text extraction function). Look through 20 random examples and compare the classifier predictions to your own judgments. Report any classifier errors. What fraction of documents are harmful? Based on your observations, what would be suitable classifier fidence threshold(s) to use in filtering?
+
+  *Deliverable:* A 2-5 sentence response.
+
+  #response[
+    Run `uv run cs336_data/harmful_content.py` to get the results.
+
+    Across 1,944 valid HTML documents extracted from `example.warc.gz`, the classifiers labeled 0.15% (3/1,944) as NSFW, 0.87% (17/1,944) as toxic, and 0.93% (18/1,944) as harmful overall. In the 20 randomly sampled documents, all 20 were predicted as `non-nsfw` and `non-toxic`, which matches manual inspection (0 classification errors): the samples consist of benign pages such as real estate listings, news, and directories, plus one Chinese lottery-spam page that is spam rather than NSFW or toxic speech, though the toxic classifier showed noticeably lower confidence on it (`0.5912`). Because many sampled pages are non-English while the Jigsaw models were trained on English comments, low-confidence predictions are more prone to noise out of domain. Based on the threshold sweep, a relatively high confidence threshold around `0.80`–`0.90` (which flags 0.36% of documents at `>= 0.80` and 0.21% at `>= 0.90`), ideally applied after English language filtering, is suitable to remove clearly harmful content while minimizing false positives on benign or multilingual pages.
+  ]
