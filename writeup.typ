@@ -229,3 +229,19 @@
 
     Across 1,944 valid HTML documents extracted from `example.warc.gz`, the classifiers labeled 0.15% (3/1,944) as NSFW, 0.87% (17/1,944) as toxic, and 0.93% (18/1,944) as harmful overall. In the 20 randomly sampled documents, all 20 were predicted as `non-nsfw` and `non-toxic`, which matches manual inspection (0 classification errors): the samples consist of benign pages such as real estate listings, news, and directories, plus one Chinese lottery-spam page that is spam rather than NSFW or toxic speech, though the toxic classifier showed noticeably lower confidence on it (`0.5912`). Because many sampled pages are non-English while the Jigsaw models were trained on English comments, low-confidence predictions are more prone to noise out of domain. Based on the threshold sweep, a relatively high confidence threshold around `0.80`–`0.90` (which flags 0.36% of documents at `>= 0.80` and 0.21% at `>= 0.90`), ideally applied after English language filtering, is suitable to remove clearly harmful content while minimizing false positives on benign or multilingual pages.
   ]
+
+== Gopher quality filters
+
++ Implement (at least) the subset of the Gopher quality filters as described above. For tokenizing text into words, you might find the NLTK package useful (specifically `nltk.word_tokenize`), though you're not required to use it.
+  
+  *Deliverable*: A function that takes a string as its only argument and returns a boolean indicating whether the text passes the Gopher quality filters. Implement the adapter `[run_gopher_quality_filter]` . Then, make sure your filters pass the tests in `uv run pytest -k test_gopher`.
+
+  #response[Success. See `gopher_filter` function in `./cs336_data/quality_filters.py` file.]
+
++ Run your rule-based quality filter on text extracted from the WARC files (via your previously-implemented text extraction function). Look through 20 random examples and compare the filter predictions to your own judgment. Comment on any cases where the quality filters differ from your judgments.
+  
+  *Deliverable*: A 2-5 sentence response.
+
+  #response[
+    Out of the 20 random WARC examples, 16 passed the Gopher quality filter and 4 failed, revealing that the rules are overly permissive on boilerplate and spam while misclassifying non-space-delimited languages. Many pages that passed—such as login portals, product catalogs with raw HTML and currency lists, repeated UI navigation, cookie consent banners, and apparent betting SEO spam which were low-quality by my judgment, yet passed because their tokens satisfied the word count, mean word length, and alphabetic ratio thresholds. Conversely, two Chinese pages failed solely due to mean word length (>10 characters) because nltk.word_tokenize cannot segment unspaced Chinese text, whereas the other two failures were mostly numbered listings and navigation menus that matched my low-quality judgment. Overall, Gopher's surface heuristics alone cannot distinguish coherent prose from menus, boilerplate, or spam, and need to be paired with language filtering (or language-specific tokenization) and learned quality classifiers.
+  ]

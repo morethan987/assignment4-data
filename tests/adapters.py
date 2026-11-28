@@ -5,6 +5,7 @@ from typing import Any
 
 from cs336_data.harmful_content import classify_nsfw, classify_toxic_speech
 from cs336_data.mask_pii import mask_emails, mask_ips, mask_phone_numbers
+from cs336_data.quality_filters import gopher_filter
 from cs336_data.utils import detect_lang, extract_text_from_html_bytes
 
 
@@ -42,7 +43,7 @@ def run_classify_quality(text: str) -> tuple[Any, float]:
 
 
 def run_gopher_quality_filter(text: str) -> bool:
-    raise NotImplementedError
+    return gopher_filter(text)
 
 
 def run_exact_line_deduplication(input_files: list[os.PathLike], output_directory: os.PathLike):
